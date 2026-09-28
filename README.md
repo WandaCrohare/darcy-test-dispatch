@@ -47,9 +47,11 @@ deck). If it reaches the board, you'll know.
 
 - 8-bit console aesthetic: pixel borders, CRT scanlines, PICO-8 palette
 - Procedurally generated mirrored pixel sprites — every character has its own
-- Mana-style energy, bench switching, direct hits, KO promotions
+- Mana-style energy, bench switching, direct hits, overflow damage, KO promotions
 - Optional CPU opponent with deploy/attack/retreat heuristics
+- **English and Spanish** — toggle the language button anytime, even mid-match
 - Retro WebAudio bleeps (mutable), attack animations, screen shake
+- Mobile responsive
 - Everything in a single self-contained `index.html`
 
 ## Development

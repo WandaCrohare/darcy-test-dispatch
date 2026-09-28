@@ -43,7 +43,6 @@ body::before{ /* CRT scanlines */
 header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;border-bottom:3px solid var(--line)}
 .logo{font-family:var(--fpx);font-size:11px;color:var(--yellow);text-shadow:2px 2px 0 #000}
 #turnTag{font-family:var(--fpx);font-size:8px;color:var(--dim);flex:1;text-align:right}
-#muteBtn{font-family:var(--fpx);font-size:7px}
 
 /* ---------- zones ---------- */
 .zone{display:flex;flex-direction:column;gap:5px;min-height:0}
@@ -91,7 +90,6 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 .hpfill.mid{background:var(--orange)}
 .hpfill.low{background:var(--red)}
 .atks{display:flex;flex-direction:column;gap:4px;padding:5px}
-.usedtag{font-family:var(--fpx);font-size:6px;color:var(--dim);text-align:center;padding:2px 0 3px;letter-spacing:1px}
 .atk{
   display:flex;gap:5px;align-items:center;font-family:var(--fterm);font-size:15px;line-height:1;
   background:var(--panel2);border:2px solid var(--line);color:var(--ink);padding:4px 5px;cursor:pointer;text-align:left;width:100%;
@@ -245,6 +243,7 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 <div id="app">
   <header>
     <span class="logo">DEPLOY MASTERS</span>
+    <button id="langBtn" class="btn langBtn">ESPAÑOL</button>
     <button id="helpBtn" class="btn">HOW TO PLAY</button>
     <button id="muteBtn" class="btn">SOUND: ON</button>
     <span id="turnTag">TURN: —</span>
@@ -261,30 +260,21 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 </div>
 
 <div id="banner" class="hidden"></div>
-<div id="darcyFlash" class="hidden"><span>DARCYIQ HAS ENTERED THE CHAT</span></div>
+<div id="darcyFlash" class="hidden"><span></span></div>
 
 <div id="startScreen" class="overlay">
   <h1>DEPLOY MASTERS</h1>
   <p class="tag">A retro TCG with the team · 2 players, 1 keyboard</p>
   <div class="names">
-    <label>PLAYER 1 <input id="n0" maxlength="12" value="PLAYER 1"></label>
-    <label>PLAYER 2 <input id="n1" maxlength="12" value="PLAYER 2"></label>
+    <label><span id="lblP1">PLAYER 1</span> <input id="n0" maxlength="12" value="PLAYER 1"></label>
+    <label><span id="lblP2">PLAYER 2</span> <input id="n1" maxlength="12" value="PLAYER 2"></label>
   </div>
   <div class="names">
+    <button id="langBtn2" class="btn langBtn">ESPAÑOL</button>
     <button id="p2mode" class="btn">PLAYER 2: HUMAN</button>
   </div>
   <div class="showcase" id="showcase"></div>
-  <div class="rules">
-    <b>HOW TO PLAY</b><br>
-    · Energy refills every turn: turn 1 gives you 1, turn 2 gives 2, and so on up to 10. Unspent energy is lost.<br>
-    · Playing a card costs its yellow number. The first one becomes your <b>active</b>; the rest go to the <b>bench</b> (3 spots).<br>
-    · Your active attacks as many times as your energy allows — even the same turn it's played. Damage hits the enemy active; if they have no active, it hits <b>them directly</b>.<br>
-    · Each player has <b>30 HP</b>. Bring the other player's HP to 0 to win.<br>
-    · When your active falls, the first card on your bench steps up to replace it.<br>
-    · Once per turn you can <b>switch</b> your active with a benched card, for free.<br>
-    · Rumor says there's a legendary card hiding in one of the decks. Don't waste it.<br>
-    · Player 2 can be a <b>CPU opponent</b> — flip the toggle before pressing PLAY.
-  </div>
+  <div class="rules" id="startRules"></div>
   <button id="playBtn" class="btn primary">PLAY!</button>
 </div>
 
@@ -295,64 +285,170 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 </div>
 
 <div id="helpScreen" class="overlay hidden">
-  <h2>HOW TO PLAY</h2>
+  <h2 id="helpTitle">HOW TO PLAY</h2>
   <div class="rules" id="helpBody"></div>
   <button id="helpCloseBtn" class="btn primary">CLOSE</button>
 </div>
 
 <script>
 'use strict';
-/* ================= ROSTER ================= */
+/* ================= ROSTER (bilingual: en / es) ================= */
 const CHARS=[
- {id:'james',name:'JAMES',epithet:'The Architect',role:'ARCH',stars:2,hp:90,cost:3,color:'#29adff',
-  quip:'James lays the foundations.',
+ {id:'james',name:'JAMES',
+  epithet:{en:'The Architect',es:'El Arquitecto'},role:{en:'ARCH',es:'ARQ'},
+  stars:2,hp:90,cost:3,color:'#29adff',
+  quip:{en:'James lays the foundations.',es:'James clava los cimientos.'},
   attacks:[
-   {name:'Foundation',cost:1,dmg:10,txt:'A wall that does not move. Not even in production.'},
-   {name:'Design Pattern',cost:3,dmg:30,txt:'Injects dependencies. And fear.'}]},
- {id:'travis',name:'TRAVIS',epithet:'The Project Owner',role:'PO',stars:2,hp:80,cost:4,color:'#ffa300',
-  quip:'Travis shows up with the whole backlog.',
+   {name:{en:'Foundation',es:'Cimiento'},cost:1,dmg:10,
+    txt:{en:'A wall that does not move. Not even in production.',es:'Un muro que no se mueve ni en producción.'}},
+   {name:{en:'Design Pattern',es:'Patrón de Diseño'},cost:3,dmg:30,
+    txt:{en:'Injects dependencies. And fear.',es:'Inyecta dependencias. Y miedo.'}}]},
+ {id:'travis',name:'TRAVIS',
+  epithet:{en:'The Project Owner',es:'El Project Owner'},role:{en:'PO',es:'PO'},
+  stars:2,hp:80,cost:4,color:'#ffa300',
+  quip:{en:'Travis shows up with the whole backlog.',es:'Travis llega con el backlog completo.'},
   attacks:[
-   {name:'Re-prioritization',cost:1,dmg:15,draw:1,txt:"Yesterday's 'nice-to-have' is today's emergency."},
-   {name:'Scope Creep',cost:4,dmg:40,txt:'Just one tiny thing more. Absolute chaos.'}]},
- {id:'darcy',name:'DARCYIQ',epithet:'The Legendary AI',role:'AI',stars:3,hp:150,cost:5,color:'#ff77a8',holo:true,
-  quip:'DARCYIQ HAS ENTERED THE CHAT.',
+   {name:{en:'Re-prioritization',es:'Repriorización'},cost:1,dmg:15,draw:1,
+    txt:{en:"Yesterday's 'nice-to-have' is today's emergency.",es:'Ahora es urgente lo que era de ayer.'}},
+   {name:{en:'Scope Creep',es:'Scope Creep'},cost:4,dmg:40,
+    txt:{en:'Just one tiny thing more. Absolute chaos.',es:'“Es una cosita nomás.” Desastrosísimo.'}}]},
+ {id:'darcy',name:'DARCYIQ',
+  epithet:{en:'The Legendary AI',es:'La IA Legendaria'},role:{en:'AI',es:'IA'},
+  stars:3,hp:150,cost:5,color:'#ff77a8',holo:true,
+  quip:{en:'DARCYIQ HAS ENTERED THE CHAT.',es:'DARCYIQ HA ENTRADO AL CHAT.'},
   attacks:[
-   {name:'Self-Refactor',cost:2,dmg:30,heal:20,txt:'Optimizes itself while watching you.'},
-   {name:'Production Deploy',cost:6,dmg:70,txt:'Friday, 4:59 PM. Zero incidents.'}]},
- {id:'nico',name:'NICO',epithet:'Programmer',role:'DEV',stars:1,hp:55,cost:2,color:'#ff004d',
-  quip:'Nico arrives. Bugs included, free of charge.',
+   {name:{en:'Self-Refactor',es:'Auto-Refactor'},cost:2,dmg:30,heal:20,
+    txt:{en:'Optimizes itself while watching you.',es:'Se optimiza mientras te mira.'}},
+   {name:{en:'Production Deploy',es:'Deploy a Producción'},cost:6,dmg:70,
+    txt:{en:'Friday, 4:59 PM. Zero incidents.',es:'Viernes, 17:59. Cero incidentes.'}}]},
+ {id:'nico',name:'NICO',
+  epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
+  stars:1,hp:55,cost:2,color:'#ff004d',
+  quip:{en:'Nico arrives. Bugs included, free of charge.',es:'Nico llega. Bugs incluidos, sin cargo.'},
   attacks:[
-   {name:'Happy Bug',cost:1,dmg:10,txt:"It's not a bug, it's a surprise feature."},
-   {name:'Friday Deploy',cost:3,dmg:30,txt:'Then he ran for the last train.'}]},
- {id:'christian',name:'CHRISTIAN',epithet:'Programmer',role:'DEV',stars:1,hp:45,cost:1,color:'#29adff',
-  quip:'Christian reviews your code… and your soul.',
+   {name:{en:'Happy Bug',es:'Bug Feliz'},cost:1,dmg:10,
+    txt:{en:"It's not a bug, it's a surprise feature.",es:'No es un bug, es una feature sorpresa.'}},
+   {name:{en:'Friday Deploy',es:'Deploy del Viernes'},cost:3,dmg:30,
+    txt:{en:'Then he ran for the last train.',es:'Y se fue corriendo a la estación.'}}]},
+ {id:'christian',name:'CHRISTIAN',
+  epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
+  stars:1,hp:45,cost:1,color:'#29adff',
+  quip:{en:'Christian reviews your code… and your soul.',es:'Christian revisa tu código… y tu alma.'},
   attacks:[
-   {name:'Code Review',cost:1,dmg:15,txt:'Comments. With love. Mostly.'},
-   {name:'History Ctrl+Z',cost:2,dmg:20,heal:5,txt:'Undid the damage. And the commit.'}]},
- {id:'fernando',name:'FERNANDO',epithet:'Programmer',role:'DEV',stars:1,hp:60,cost:2,color:'#ffa300',
-  quip:'Fernando pushes without looking back.',
+   {name:{en:'Code Review',es:'Code Review'},cost:1,dmg:15,
+    txt:{en:'Comments. With love. Mostly.',es:'Son comentarios. Con amor. Casi.'}},
+   {name:{en:'History Ctrl+Z',es:'Ctrl+Z Histórico'},cost:2,dmg:20,heal:5,
+    txt:{en:'Undid the damage. And the commit.',es:'Deshizo el daño. Y el commit.'}}]},
+ {id:'fernando',name:'FERNANDO',
+  epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
+  stars:1,hp:60,cost:2,color:'#ffa300',
+  quip:{en:'Fernando pushes without looking back.',es:'Fernando hace push sin mirar atrás.'},
   attacks:[
-   {name:'Force Push',cost:1,dmg:20,txt:'--force and away we go.'},
-   {name:'Dark Mode',cost:3,dmg:35,txt:"Strikes from the IDE's shadows."}]},
- {id:'alexis',name:'ALEXIS',epithet:'Programmer',role:'DEV',stars:1,hp:50,cost:2,color:'#00e436',
-  quip:'Alexis refactors everything, even the coffee.',
+   {name:{en:'Force Push',es:'Commit Forzado'},cost:1,dmg:20,
+    txt:{en:'--force and away we go.',es:'--force y a otra cosa, mariposa.'}},
+   {name:{en:'Dark Mode',es:'Modo Oscuro'},cost:3,dmg:35,
+    txt:{en:"Strikes from the IDE's shadows.",es:'Ataca desde las sombras del IDE.'}}]},
+ {id:'alexis',name:'ALEXIS',
+  epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
+  stars:1,hp:50,cost:2,color:'#00e436',
+  quip:{en:'Alexis refactors everything, even the coffee.',es:'Alexis refactoriza hasta el café.'},
   attacks:[
-   {name:'Night Refactor',cost:1,dmg:15,draw:1,txt:'The best code is born at 3 AM.'},
-   {name:'Panic!',cost:3,dmg:30,txt:'The compiler was right.'}]},
- {id:'enzo',name:'ENZO',epithet:'Programmer',role:'DEV',stars:1,hp:50,cost:2,color:'#ff77a8',
-  quip:'Enzo pasted something from StackOverflow.',
+   {name:{en:'Night Refactor',es:'Refactor Nocturno'},cost:1,dmg:15,draw:1,
+    txt:{en:'The best code is born at 3 AM.',es:'De madrugada nace el mejor código.'}},
+   {name:{en:'Panic!',es:'¡Pánico!'},cost:3,dmg:30,
+    txt:{en:'The compiler was right.',es:'El compilador tenía razón.'}}]},
+ {id:'enzo',name:'ENZO',
+  epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
+  stars:1,hp:50,cost:2,color:'#ff77a8',
+  quip:{en:'Enzo pasted something from StackOverflow.',es:'Enzo pegó algo de StackOverflow.'},
   attacks:[
-   {name:'SO Instinct',cost:1,dmg:10,txt:'StackOverflow: the real AI.'},
-   {name:'Epic Copy-Paste',cost:2,dmg:25,txt:'If it compiles, it is mine.'}]},
- {id:'wanda',name:'WANDA',epithet:'The UX',role:'UX',stars:1,hp:45,cost:1,color:'#ffec27',
-  quip:'Wanda redesigned the board. Everything is prettier.',
+   {name:{en:'SO Instinct',es:'Instinto SO'},cost:1,dmg:10,
+    txt:{en:'StackOverflow: the real AI.',es:'StackOverflow: la verdadera IA.'}},
+   {name:{en:'Epic Copy-Paste',es:'Copy-Paste Épico'},cost:2,dmg:25,
+    txt:{en:'If it compiles, it is mine.',es:'Si compila, es mío.'}}]},
+ {id:'wanda',name:'WANDA',
+  epithet:{en:'The UX',es:'La UX'},role:{en:'UX',es:'UX'},
+  stars:1,hp:45,cost:1,color:'#ffec27',
+  quip:{en:'Wanda redesigned the board. Everything is prettier.',es:'Wanda rediseñó el tablero. Todo más lindo.'},
   attacks:[
-   {name:'User Feedback',cost:1,dmg:15,draw:1,txt:"'I don't know what I want, but it is not this.'"},
-   {name:'Surprise Redesign',cost:2,dmg:20,heal:10,txt:'Prettier. Usable. Unexpected.'}]},
+   {name:{en:'User Feedback',es:'Feedback de Usuario'},cost:1,dmg:15,draw:1,
+    txt:{en:"'I don't know what I want, but it is not this.'",es:'“No sé qué busco, pero no es esto.”'}},
+   {name:{en:'Surprise Redesign',es:'Rediseño Sorpresa'},cost:2,dmg:20,heal:10,
+    txt:{en:'Prettier. Usable. Unexpected.',es:'Todo más lindo. Y más usable.'}}]},
 ];
 const PLAYER_HP=30;
-const KO_LINES=['is gone from the repo','landed on the known-issues list','needed an emergency rollback','went to production… forever'];
-const WIN_LINES=['GG. Shipped to production.','Flawless deploy. Zero rollbacks.','Board wiped clean. So was the repo.'];
+
+/* ================= I18N ================= */
+const LANGS={
+en:{
+ howToPlay:'HOW TO PLAY',helpTitle:'HOW TO PLAY',close:'CLOSE',endTurn:'END TURN ▶',
+ swap:'SWITCH ACTIVE',swapPick:'PICK FROM BENCH…',play:'PLAY!',rematch:'REMATCH',
+ soundOn:'SOUND: ON',soundOff:'SOUND: OFF',p2h:'PLAYER 2: HUMAN',p2c:'PLAYER 2: CPU',
+ turn:'TURN: ',gameOver:'GAME OVER',slotA:'ACTIVE',slotB:'BENCH',
+ deck:'DECK',handW:'HAND',switched:'SWITCHED',
+ clickPlay:'Click to play',clickBench:'Click to move to the front',costT:'Energy cost to play',
+ bannerYou:'YOUR TURN',bannerCpu:'CPU TURN',keep:'KEEP PLAYING — {name}',
+ tagline:'A retro TCG with the team · 2 players, 1 keyboard',
+ p1:'PLAYER 1',p2:'PLAYER 2',
+ rules:'<b>HOW TO PLAY</b><br>· Energy refills every turn: turn 1 gives you 1, turn 2 gives 2, and so on up to 10. Unspent energy is lost.<br>· Playing a card costs its yellow number. The first one becomes your <b>active</b>; the rest go to the <b>bench</b> (3 spots).<br>· Your active attacks as many times as your energy allows — even the same turn it\'s played. Damage hits the enemy active; if they have no active, it hits <b>them directly</b>. If an attack deals more damage than the card has HP left, the <b>overflow</b> also hits the player.<br>· Each player has <b>30 HP</b>. Bring the other player\'s HP to 0 to win.<br>· When your active falls, the first card on your bench steps up to replace it.<br>· Once per turn you can <b>switch</b> your active with a benched card, for free.<br>· Rumor says there\'s a legendary card hiding in one of the decks. Don\'t waste it.<br>· Player 2 can be a <b>CPU opponent</b> — flip the toggle before pressing PLAY.',
+ msgStart:'The match begins! {legend}',
+ msgLegend:'Rumor has it a legendary card is hiding in someone\'s deck…',
+ msgNoLegend:'No legendary showed up this time. Good luck with the bugs.',
+ msgCpuCtl:'<b>{name}</b> is CPU-controlled.',
+ msgTurn:'<b>{name}</b>: energy {e}/{m}. HP {hp}/{tot}.',
+ msgDeploy:'<b>{name}</b> hits the board. {quip}',
+ msgAtk:'<b>{name}</b> uses <b>{atk}</b> ({dmg} dmg). {txt}{direct}',
+ msgDirect:' <b>Direct hit!</b>',
+ msgOverflow:' <b>{n} damage overflowed</b> straight to their HP!',
+ msgKO:'K.O.! <b>{name}</b> {line}!',
+ msgPromote:'<b>{name}</b> steps up from the bench.',
+ msgSwap:'<b>{name}</b> rotates the bench: <b>{card}</b> takes the front.',
+ msgEmpty:'{name}\'s deck is empty!',
+ msgCpuThink:'<b>{name}</b> (CPU) is thinking…',
+ winT:'{name} WINS!',
+ darcyFlash:'DARCYIQ HAS ENTERED THE CHAT',
+ koLines:['is gone from the repo','landed on the known-issues list','needed an emergency rollback','went to production… forever'],
+ winLines:['GG. Shipped to production.','Flawless deploy. Zero rollbacks.','Board wiped clean. So was the repo.'],
+},
+es:{
+ howToPlay:'CÓMO JUGAR',helpTitle:'CÓMO JUGAR',close:'CERRAR',endTurn:'PASAR TURNO ▶',
+ swap:'CAMBIAR ACTIVO',swapPick:'ELEGÍ UNO DE BANCA…',play:'¡JUGAR!',rematch:'REVANCHA',
+ soundOn:'SONIDO: ON',soundOff:'SONIDO: OFF',p2h:'JUGADOR 2: HUMANO',p2c:'JUGADOR 2: CPU',
+ turn:'TURNO: ',gameOver:'PARTIDA TERMINADA',slotA:'ACTIVO',slotB:'BANCA',
+ deck:'MAZO',handW:'MANO',switched:'CAMBIO USADO',
+ clickPlay:'Clic para jugar',clickBench:'Clic para pasar al frente',costT:'Energía para jugarla',
+ bannerYou:'TU TURNO',bannerCpu:'TURNO CPU',keep:'SEGUÍ JUGANDO — {name}',
+ tagline:'TCG retro del equipo · 2 jugadores, 1 teclado',
+ p1:'JUGADOR 1',p2:'JUGADOR 2',
+ rules:'<b>CÓMO JUGAR</b><br>· Energía que se recarga cada turno: turno 1 te da 1, turno 2 te da 2… hasta 10. Lo no gastado se pierde.<br>· Jugar una carta cuesta su número amarillo. La primera va al <b>activo</b>; el resto a la <b>banca</b> (3 lugares).<br>· Tu activo ataca tantas veces como energía tenga — incluso el mismo turno en que lo bajás. El daño pega en el activo rival; si no tiene, va <b>directo a sus HP</b>. Si un ataque pega más daño del HP que le queda a la carta, el <b>sobrante</b> también va al jugador.<br>· Cada jugador tiene <b>30 HP</b>. Dejalos en 0 para ganar.<br>· Cuando tu activo cae, el primero de tu banca sale a reemplazarlo.<br>· Una vez por turno podés <b>cambiar</b> el activo por uno de banca, gratis.<br>· Se rumorea que hay una carta legendaria escondida en uno de los mazos. No la desperdicies.<br>· El jugador 2 puede ser una <b>CPU</b> — activá el toggle antes de apretar ¡JUGAR!.',
+ msgStart:'¡Empieza la partida! {legend}',
+ msgLegend:'Se rumorea que una carta legendaria anda suelta en algún mazo…',
+ msgNoLegend:'Esta vez ninguna legendaria apareció. Suerte con los bugs.',
+ msgCpuCtl:'<b>{name}</b> juega con la CPU.',
+ msgTurn:'<b>{name}</b>: energía {e}/{m}. HP {hp}/{tot}.',
+ msgDeploy:'<b>{name}</b> entra al tablero. {quip}',
+ msgAtk:'<b>{name}</b> usa <b>{atk}</b> ({dmg} de daño). {txt}{direct}',
+ msgDirect:' <b>¡Directo al corazón!</b>',
+ msgOverflow:' ¡<b>{n} de daño sobrante</b> pasaron directo a sus HP!',
+ msgKO:'K.O. ¡<b>{name}</b> {line}!',
+ msgPromote:'<b>{name}</b> sale de banca a cubrir el puesto.',
+ msgSwap:'<b>{name}</b> rota la banca: <b>{card}</b> pasa al frente.',
+ msgEmpty:'¡El mazo de {name} está vacío!',
+ msgCpuThink:'<b>{name}</b> (CPU) está pensando…',
+ winT:'¡{name} GANA!',
+ darcyFlash:'DARCYIQ HA ENTRADO AL CHAT',
+ koLines:['quedó fuera del repo','terminó en la lista de bugs conocidos','necesitó un rollback épico','se fue a producción… para siempre'],
+ winLines:['GG. Ya está en producción.','Deploy impecable. Ni un rollback.','El tablero quedó limpio. El repo también.'],
+}};
+let lang='en';
+try{
+  const saved=localStorage.getItem('tcg-lang');
+  if(saved==='es'||saved==='en')lang=saved;
+  else if((navigator.language||'').toLowerCase().startsWith('es'))lang='es';
+}catch(e){}
+const t=k=>LANGS[lang][k]??LANGS.en[k];
+const tr=v=>(v&&typeof v==='object')?v[lang]:v;
+const fmt=(s,o)=>s.replace(/\{(\w+)\}/g,(_,k)=>o[k]??'');
 
 /* ================= UTILS ================= */
 const $=s=>document.querySelector(s);
@@ -383,10 +479,10 @@ function tone(f,d,type='square',v=.04,when=0){
   if(muted)return;
   try{
     AC=AC||new (window.AudioContext||window.webkitAudioContext)();
-    const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+when;
+    const o=AC.createOscillator(),g=AC.createGain(),tm=AC.currentTime+when;
     o.type=type;o.frequency.value=f;o.connect(g);g.connect(AC.destination);
-    g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
-    o.start(t);o.stop(t+d);
+    g.gain.setValueAtTime(v,tm);g.gain.exponentialRampToValueAtTime(.0001,tm+d);
+    o.start(tm);o.stop(tm+d);
   }catch(e){}
 }
 const sfx={
@@ -417,19 +513,19 @@ function draw(pi,n){
   const p=S.players[pi];
   for(let i=0;i<n;i++){
     if(p.deck.length)p.hand.push(p.deck.pop());
-    else log(`${p.name}'s deck is empty!`,'sys');
+    else log(fmt(t('msgEmpty'),{name:p.name}),'sys');
   }
 }
 
 function newGame(){
-  const n0=($('#n0').value.trim()||'PLAYER 1').toUpperCase();
-  const n1=($('#n1').value.trim()||'PLAYER 2').toUpperCase();
+  const n0=($('#n0').value.trim()||t('p1')).toUpperCase();
+  const n1=($('#n1').value.trim()||t('p2')).toUpperCase();
   const d0=Math.random()<0.5,d1=Math.random()<0.5;
   S={phase:'pass',turn:0,busy:false,swapMode:false,players:[mkPlayer(n0,d0),mkPlayer(n1,d1,aiP2)]};
   gameId++;
   draw(0,5);draw(1,5);
-  log(`The match begins! ${d0||d1?"Rumor has it a legendary card is hiding in someone's deck…":'No legendary showed up this time. Good luck with the bugs.'}`,'sys');
-  if(aiP2)log(`<b>${n1}</b> is CPU-controlled.`,'sys');
+  log(fmt(t('msgStart'),{legend:(d0||d1)?t('msgLegend'):t('msgNoLegend')}),'sys');
+  if(aiP2)log(fmt(t('msgCpuCtl'),{name:n1}),'sys');
   $('#startScreen').classList.add('hidden');
   $('#winScreen').classList.add('hidden');
   $('#log').innerHTML='';
@@ -440,8 +536,8 @@ function beginTurn(pi){
   p.max=Math.min(10,p.max+1);p.energy=p.max;p.retreatUsed=false;
   S.turn=pi;S.phase='play';S.busy=false;S.swapMode=false;
   draw(pi,1);
-  banner(`${p.name}${p.isAI?' (CPU)':''} — ${p.isAI?'CPU TURN':'YOUR TURN'}`);sfx.turn();
-  log(`<b>${p.name}</b>: energy ${p.energy}/${p.max}. HP ${p.hp}/${PLAYER_HP}.`,'sys');
+  banner(`${p.name}${p.isAI?' (CPU)':''} — ${p.isAI?t('bannerCpu'):t('bannerYou')}`);sfx.turn();
+  log(fmt(t('msgTurn'),{name:p.name,e:p.energy,m:p.max,hp:p.hp,tot:PLAYER_HP}),'sys');
   render();snapshot();
   if(p.isAI)aiTurn();
 }
@@ -457,7 +553,7 @@ function tryDeploy(pi,i){
   p.energy-=c.def.cost;p.hand.splice(i,1);
   if(!p.active)p.active=c;else p.bench.push(c);
   sfx.deploy();
-  log(`<b>${c.def.name}</b> hits the board. ${c.def.quip}`);
+  log(fmt(t('msgDeploy'),{name:c.def.name,quip:tr(c.def.quip)}));
   if(c.def.holo){flashDarcy();sfx.darcy();}
   render();snapshot();
   const el=document.querySelector(`[data-uid="${c.uid}"]`);
@@ -473,13 +569,20 @@ function tryAttack(pi,ai){
   setTimeout(()=>{ if(meEl)meEl.classList.add(pi?'lunge-up':'lunge-down'); },60);
   setTimeout(()=>{
     const direct=!foe||foe.hp<=0;
+    let carry=0;
     if(direct){ foeP.hp-=atk.dmg; }
-    else { foe.hp-=atk.dmg; }
+    else {
+      const absorbed=Math.min(Math.max(0,foe.hp),atk.dmg);
+      foe.hp-=absorbed;
+      carry=atk.dmg-absorbed;
+      if(carry>0)foeP.hp-=carry;
+    }
     if(atk.heal)me.hp=Math.min(me.def.hp,me.hp+atk.heal);
     if(atk.draw)draw(pi,atk.draw);
     sfx.attack();
-    if(atk.dmg>=40)quake();
-    log(`<b>${me.def.name}</b> uses <b>${atk.name}</b> (${atk.dmg} dmg). ${atk.txt}${direct?' <b>Direct hit!</b>':''}`);
+    if(atk.dmg>=40||carry>0)quake();
+    log(fmt(t('msgAtk'),{name:me.def.name,atk:tr(atk.name),dmg:atk.dmg,txt:tr(atk.txt),
+      direct:(direct||carry>0)?(carry>0?fmt(t('msgOverflow'),{n:carry}):t('msgDirect')):''}));
     render();
     if(direct){
       const z=$(pi===0?'#zone1':'#zone0');
@@ -497,10 +600,10 @@ function resolve(pi){
   if(foeP.active&&foeP.active.hp<=0){
     const dead=foeP.active;foeP.active=null;
     sfx.ko();quake();
-    log(`K.O.! <b>${dead.def.name}</b> ${pick(KO_LINES)}!`,'sys');
+    log(fmt(t('msgKO'),{name:dead.def.name,line:pick(LANGS[lang].koLines)}),'sys');
     if(foeP.bench.length){
       foeP.active=foeP.bench.shift();
-      log(`<b>${foeP.active.def.name}</b> steps up from the bench.`);
+      log(fmt(t('msgPromote'),{name:foeP.active.def.name}));
     }
   }
   S.busy=false;
@@ -512,14 +615,14 @@ function doSwap(pi,i){
   if(!S.swapMode||S.turn!==pi||S.phase!=='play'||S.busy||p.retreatUsed||!p.active)return;
   [p.active,p.bench[i]]=[p.bench[i],p.active];
   p.retreatUsed=true;S.swapMode=false;
-  log(`<b>${p.name}</b> rotates the bench: <b>${p.active.def.name}</b> takes the front.`);
+  log(fmt(t('msgSwap'),{name:p.name,card:p.active.def.name}));
   sfx.turn();render();snapshot();
 }
 function gameOver(winner){
   S.phase='over';render();
   const w=S.players[winner];
-  $('#winTitle').textContent=`${w.name} WINS!`;
-  $('#winLine').textContent=pick(WIN_LINES);
+  $('#winTitle').textContent=fmt(t('winT'),{name:w.name});
+  $('#winLine').textContent=pick(LANGS[lang].winLines);
   $('#winScreen').classList.remove('hidden');
   sfx.win();
 }
@@ -547,7 +650,7 @@ function aiChooseAttack(st,pi){
 }
 async function aiTurn(){
   const id=gameId,pi=S.turn,p=S.players[pi];
-  log(`<b>${p.name}</b> (CPU) is thinking…`);
+  log(fmt(t('msgCpuThink'),{name:p.name}));
   await sleep(900);
   let guard=0;
   while(guard++<30&&S.phase==='play'&&gameId===id){
@@ -590,6 +693,7 @@ function banner(txt){
   bannerT=setTimeout(()=>{b.classList.add('fade');setTimeout(()=>b.classList.add('hidden'),450);},1300);
 }
 function flashDarcy(){
+  $('#darcyFlash span').textContent=t('darcyFlash');
   const d=$('#darcyFlash');d.classList.remove('hidden');
   setTimeout(()=>d.classList.add('hidden'),1500);
 }
@@ -604,12 +708,12 @@ function cardEl(c,mode,pi){
   el.style.setProperty('--ac',d.color);
 
   const head=document.createElement('div');head.className='chead';
-  const nm=document.createElement('span');nm.className='cname';nm.textContent=d.name;nm.title=`${d.name} — ${d.epithet}`;
-  const coin=document.createElement('span');coin.className='coin';coin.textContent=d.cost;coin.title='Energy cost to play';
+  const nm=document.createElement('span');nm.className='cname';nm.textContent=d.name;nm.title=`${d.name} — ${tr(d.epithet)}`;
+  const coin=document.createElement('span');coin.className='coin';coin.textContent=d.cost;coin.title=t('costT');
   head.append(nm,coin);
 
   const spr=document.createElement('div');spr.className='csprite';spr.append(spriteCanvas(d));
-  const role=document.createElement('div');role.className='crole';role.textContent=`${d.role} · ${d.epithet}`;
+  const role=document.createElement('div');role.className='crole';role.textContent=`${tr(d.role)} · ${tr(d.epithet)}`;
 
   const foot=document.createElement('div');foot.className='cfoot';
   const st=document.createElement('span');st.className='stars';st.textContent='★'.repeat(d.stars);
@@ -626,10 +730,10 @@ function cardEl(c,mode,pi){
     const atks=document.createElement('div');atks.className='atks';
     d.attacks.forEach((a,i)=>{
       const b=document.createElement('button');b.className='atk';b.type='button';
-      b.title=a.txt;
+      b.title=tr(a.txt);
       const can=S.phase==='play'&&S.turn===pi&&!S.busy&&S.players[pi].energy>=a.cost;
       b.disabled=!can;
-      b.innerHTML=`<span class="a-cost">${a.cost}</span><span class="a-name">${a.name}</span><span class="a-dmg">${a.dmg}</span>`;
+      b.innerHTML=`<span class="a-cost">${a.cost}</span><span class="a-name">${tr(a.name)}</span><span class="a-dmg">${a.dmg}</span>`;
       b.addEventListener('click',()=>tryAttack(pi,i));
       atks.append(b);
     });
@@ -637,14 +741,14 @@ function cardEl(c,mode,pi){
   }
   if(mode==='hand'){
     el.classList.add('clickable');
-    el.title='Click to play';
+    el.title=t('clickPlay');
     el.addEventListener('click',()=>tryDeploy(pi,S.players[pi].hand.indexOf(c)));
   }
   if(mode==='bench'){
     const can=S.swapMode&&S.turn===pi&&!S.players[pi].retreatUsed;
     if(can){
       el.classList.add('swapable','clickable');
-      el.title='Click to move to the front';
+      el.title=t('clickBench');
       el.addEventListener('click',()=>doSwap(pi,S.players[pi].bench.indexOf(c)));
     }
   }
@@ -668,17 +772,17 @@ function renderZone(pi){
   const table=document.createElement('div');table.className='table';
   const slots=document.createElement('div');slots.className='slots';
   const mkSlot=(cls,label)=>{const s=document.createElement('div');s.className='slot '+cls;s.textContent=label;return s;};
-  slots.append(p.active?cardEl(p.active,'active',pi):mkSlot('sa','ACTIVE'));
+  slots.append(p.active?cardEl(p.active,'active',pi):mkSlot('sa',t('slotA')));
   for(let i=0;i<3;i++){
     const c=p.bench[i];
-    slots.append(c?cardEl(c,'bench',pi):mkSlot('sb','BENCH'));
+    slots.append(c?cardEl(c,'bench',pi):mkSlot('sb',t('slotB')));
   }
   const info=document.createElement('div');info.className='info';
   const pn=document.createElement('div');pn.className='pname';
   pn.textContent=p.name;
   pn.style.color=pi===S.turn&&S.phase==='play'?'var(--yellow)':'var(--dim)';
   const meta=document.createElement('div');meta.className='meta';
-  meta.textContent=`DECK ${p.deck.length} · HAND ${p.hand.length}${p.retreatUsed?' · SWITCHED':''}`;
+  meta.textContent=`${t('deck')} ${p.deck.length} · ${t('handW')} ${p.hand.length}${p.retreatUsed?' · '+t('switched'):''}`;
   const phrow=document.createElement('div');phrow.className='phrow';
   const phnum=document.createElement('span');phnum.className='phnum';
   phnum.textContent=`HP ${Math.max(0,p.hp)}/${PLAYER_HP}`;
@@ -694,12 +798,12 @@ function renderZone(pi){
 function render(){
   if(!S.players.length)return;
   renderZone(1);renderZone(0);
-  $('#turnTag').textContent=S.phase==='play'?'TURN: '+S.players[S.turn].name:S.phase==='over'?'GAME OVER':'TURN: —';
-  const mine=S.phase==='play'&&!S.busy;
+  $('#turnTag').textContent=S.phase==='play'?t('turn')+S.players[S.turn].name:S.phase==='over'?t('gameOver'):t('turn')+'—';
+  const mine=S.phase==='play'&&!S.busy&&!S.players[S.turn].isAI;
   $('#endBtn').disabled=!mine;
   const p=S.players[S.turn];
   $('#swapBtn').disabled=!(mine&&p&&!p.retreatUsed&&p.active&&p.bench.length);
-  $('#swapBtn').textContent=S.swapMode?'PICK FROM BENCH…':'SWITCH ACTIVE';
+  $('#swapBtn').textContent=S.swapMode?t('swapPick'):t('swap');
   $('#swapBtn').classList.toggle('on',S.swapMode);
   const l=$('#log');l.scrollTop=l.scrollHeight;
 }
@@ -714,6 +818,42 @@ function log(html,cls){
   l.scrollTop=l.scrollHeight;
 }
 
+/* ================= I18N APPLY ================= */
+function buildShowcase(){
+  const sc=$('#showcase');sc.innerHTML='';
+  CHARS.forEach(d=>{
+    const fake={uid:'x'+d.id,def:d,hp:d.hp};
+    const el=cardEl(fake,'hand',0);
+    el.classList.remove('clickable');
+    el.title=`${d.name} — ${tr(d.epithet)}`;
+    sc.append(el);
+  });
+}
+function applyLang(){
+  document.documentElement.lang=lang;
+  try{localStorage.setItem('tcg-lang',lang);}catch(e){}
+  document.querySelectorAll('.langBtn').forEach(b=>b.textContent=lang==='en'?'ESPAÑOL':'ENGLISH');
+  $('#helpBtn').textContent=t('howToPlay');
+  $('#helpTitle').textContent=t('helpTitle');
+  $('#helpCloseBtn').textContent=t('close');
+  $('#muteBtn').textContent=muted?t('soundOff'):t('soundOn');
+  $('#endBtn').textContent=t('endTurn');
+  $('#swapBtn').textContent=S.swapMode?t('swapPick'):t('swap');
+  $('#playBtn').textContent=t('play');
+  $('#againBtn').textContent=t('rematch');
+  $('#p2mode').textContent=aiP2?t('p2c'):t('p2h');
+  $('#lblP1').textContent=t('p1');
+  $('#lblP2').textContent=t('p2');
+  const setDef=(el,prevDef)=>{ if(el.value===prevDef)el.value=t(prevDef==='PLAYER 1'?'p1':'p2'); };
+  setDef($('#n0'),lang==='en'?'JUGADOR 1':'PLAYER 1');
+  setDef($('#n1'),lang==='en'?'JUGADOR 2':'PLAYER 2');
+  document.querySelector('#startScreen .tag').textContent=t('tagline');
+  $('#startRules').innerHTML=t('rules');
+  $('#helpBody').innerHTML=t('rules');
+  buildShowcase();
+  render();
+}
+
 /* ================= EVENTS ================= */
 $('#playBtn').addEventListener('click',newGame);
 $('#againBtn').addEventListener('click',()=>{ $('#winScreen').classList.add('hidden'); $('#startScreen').classList.remove('hidden'); });
@@ -724,38 +864,27 @@ $('#swapBtn').addEventListener('click',()=>{
   if(!p||p.retreatUsed||!p.active||!p.bench.length)return;
   S.swapMode=!S.swapMode;render();
 });
-$('#muteBtn').addEventListener('click',()=>{muted=!muted;$('#muteBtn').textContent='SOUND: '+(muted?'OFF':'ON');});
-$('#helpBody').innerHTML=document.querySelector('#startScreen .rules').innerHTML;
+$('#muteBtn').addEventListener('click',()=>{muted=!muted;$('#muteBtn').textContent=muted?t('soundOff'):t('soundOn');});
 $('#helpBtn').addEventListener('click',()=>$('#helpScreen').classList.remove('hidden'));
 $('#helpCloseBtn').addEventListener('click',()=>$('#helpScreen').classList.add('hidden'));
+document.querySelectorAll('.langBtn').forEach(b=>b.addEventListener('click',()=>{lang=lang==='en'?'es':'en';applyLang();}));
 $('#p2mode').addEventListener('click',()=>{
   aiP2=!aiP2;
-  $('#p2mode').textContent='PLAYER 2: '+(aiP2?'CPU':'HUMAN');
+  $('#p2mode').textContent=aiP2?t('p2c'):t('p2h');
   $('#p2mode').classList.toggle('on',aiP2);
 });
-
-/* start-screen roster showcase */
-(function(){
-  const sc=$('#showcase');
-  CHARS.forEach(d=>{
-    const fake={uid:'x'+d.id,def:d,hp:d.hp};
-    const el=cardEl(fake,'hand',0);
-    el.classList.remove('clickable');
-    el.title=`${d.name} — ${d.epithet}`;
-    sc.append(el);
-  });
-})();
 
 /* ================= HOT RELOAD ================= */
 function snapshot(){ try{ window.claude?.hot?.snapshot?.(JSON.parse(JSON.stringify(S))); }catch(e){} }
 (function boot(){
   const h=window.claude?.hot;
+  applyLang();
   if(h&&h.ready){
     h.ready(d=>{
       if(d&&d.players&&d.players.length&&d.phase!=='start'){
         S=Object.assign({busy:false,swapMode:false},d);
         render();
-        banner(`KEEP PLAYING — ${S.players[S.turn]?.name||'?'}`);
+        banner(fmt(t('keep'),{name:S.players[S.turn]?.name||'?'}));
         if(S.phase==='play'&&S.players[S.turn]&&S.players[S.turn].isAI)setTimeout(aiTurn,900);
       }else $('#startScreen').classList.remove('hidden');
     });
