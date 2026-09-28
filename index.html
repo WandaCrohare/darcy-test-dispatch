@@ -16,13 +16,20 @@
   --green:#00e436; --blue:#29adff; --pink:#ff77a8;
   --fpx:'Press Start 2P',monospace; --fterm:'VT323',monospace;
   --cw-a:150px; --cw-b:104px; --cw-h:112px;
+  --ch-a:226px; --ch-b:126px; --ch-h:150px;
   color-scheme:dark;
 }
-@media (max-width:760px){ :root{ --cw-a:118px; --cw-b:82px; --cw-h:94px; } }
+@media (max-width:760px){
+  :root{ --cw-a:118px; --cw-b:82px; --cw-h:94px; --ch-a:194px; --ch-b:104px; --ch-h:128px; }
+}
+@media (max-width:520px){
+  :root{ --cw-a:104px; --cw-b:72px; --cw-h:84px; --ch-a:176px; --ch-b:92px; --ch-h:114px; }
+}
 html,body{height:100%}
 body{
   background:var(--bg); color:var(--ink); font-family:var(--fterm); font-size:18px;
   display:flex; flex-direction:column; padding:0 14px;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation; user-select:none;
 }
 body::before{ /* CRT scanlines */
   content:''; position:fixed; inset:0; pointer-events:none; z-index:60;
@@ -61,9 +68,9 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   background:var(--panel); border:3px solid var(--ink); box-shadow:4px 4px 0 rgba(0,0,0,.55);
   display:flex; flex-direction:column; position:relative; flex:none;
 }
-.card.mode-active{width:var(--cw-a);height:226px}
-.card.mode-bench{width:var(--cw-b);height:126px}
-.card.mode-hand{width:var(--cw-h);height:150px}
+.card.mode-active{width:var(--cw-a);height:var(--ch-a)}
+.card.mode-bench{width:var(--cw-b);height:var(--ch-b)}
+.card.mode-hand{width:var(--cw-h);height:var(--ch-h)}
 .card.clickable{cursor:pointer;transition:transform .12s}
 .card.clickable:hover{transform:translateY(-5px)}
 .card.swapable{outline:3px dashed var(--yellow);outline-offset:2px;cursor:pointer}
@@ -108,8 +115,8 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 
 /* empty slots */
 .slot{border:2px dashed var(--line);background:rgba(0,0,0,.25);display:grid;place-items:center;color:var(--dim);font-family:var(--fpx);font-size:6px}
-.slot.sa{width:var(--cw-a);height:226px}
-.slot.sb{width:var(--cw-b);height:126px}
+.slot.sa{width:var(--cw-a);height:var(--ch-a)}
+.slot.sb{width:var(--cw-b);height:var(--ch-b)}
 
 /* opponent hand: card backs */
 .back{width:44px;height:62px;flex:none;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;font-family:var(--fpx);font-size:10px;color:var(--line)}
@@ -191,6 +198,40 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   .info{min-width:0}
   .meta{font-size:14px}
   .cname{font-size:7px}
+  header{padding:4px 0;gap:8px}
+  .logo{font-size:9px}
+  .mid{padding:4px 0;gap:8px}
+  #log{max-height:56px;font-size:15px}
+  .midbtns{flex-direction:row;gap:6px}
+  .midbtns .btn{padding:9px 8px;font-size:7px}
+  .atk{font-size:14px;padding:5px}
+  .overlay h1{font-size:18px}
+  .overlay .tag{font-size:18px}
+  .rules{font-size:15px;padding:8px 10px}
+  .names input{width:150px;font-size:18px}
+  .mode-active canvas{width:48px;height:48px}
+  .mode-bench canvas{width:30px;height:30px}
+  .mode-hand canvas{width:38px;height:38px}
+  .phrow{max-width:150px}
+}
+@media (max-width:520px){
+  body{padding:0 10px}
+  .slots{gap:5px}
+  .table{gap:8px}
+  .hand{gap:5px;padding:3px 1px}
+  .back{width:34px;height:48px;font-size:8px}
+  .pip{width:8px;height:8px;border-width:1px}
+  .info{flex-direction:row;flex-wrap:wrap;align-items:center;gap:3px 8px;width:100%}
+  .pname{font-size:7px;width:100%}
+  .phbar{max-width:90px;height:6px}
+  .meta{font-size:12px}
+  .btn{padding:9px 9px;font-size:7px}
+  .card.clickable:active{transform:translateY(-2px)}
+  .mode-active canvas{width:44px;height:44px}
+  .mode-bench canvas{width:26px;height:26px}
+  .mode-hand canvas{width:34px;height:34px}
+  .crole{display:none}
+  .atk{font-size:13px}
 }
 </style>
 </head>
