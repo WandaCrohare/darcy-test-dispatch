@@ -45,7 +45,7 @@ deck). If it reaches the board, you'll know.
 
 ## Features
 
-- 8-bit console aesthetic: pixel borders, CRT scanlines, PICO-8 palette
+- **5 switchable themes**: retro 8-bit, neon cyberpunk, pastel kawaii, neo-brutalism and epic fantasy (palette, typography and borders change; preference is saved)
 - Procedurally generated mirrored pixel sprites — every character has its own
 - Mana-style energy, bench switching, direct hits, overflow damage, KO promotions
 - Optional CPU opponent with deploy/attack/retreat heuristics
