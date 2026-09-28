@@ -215,7 +215,11 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   .phrow{max-width:150px}
 }
 @media (max-width:520px){
+  html,body{height:auto}
+  body{min-height:100dvh}
   body{padding:0 10px}
+  header{flex-wrap:wrap;row-gap:6px}
+  #turnTag{width:100%;text-align:left;order:5}
   .slots{gap:5px}
   .table{gap:8px}
   .hand{gap:5px;padding:3px 1px}
@@ -232,6 +236,8 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   .mode-hand canvas{width:34px;height:34px}
   .crole{display:none}
   .atk{font-size:13px}
+  .mid{position:sticky;bottom:0;background:var(--bg);z-index:20;padding:5px 0}
+  .zone{gap:4px}
 }
 </style>
 </head>
@@ -239,6 +245,7 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 <div id="app">
   <header>
     <span class="logo">DEPLOY MASTERS</span>
+    <button id="helpBtn" class="btn">HOW TO PLAY</button>
     <button id="muteBtn" class="btn">SOUND: ON</button>
     <span id="turnTag">TURN: —</span>
   </header>
@@ -271,10 +278,10 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
     <b>HOW TO PLAY</b><br>
     · Energy refills every turn: turn 1 gives you 1, turn 2 gives 2, and so on up to 10. Unspent energy is lost.<br>
     · Playing a card costs its yellow number. The first one becomes your <b>active</b>; the rest go to the <b>bench</b> (3 spots).<br>
-    · Your active attacks as many times as your energy allows. Damage hits the enemy active; if they have no active, it hits <b>them directly</b>.<br>
+    · Your active attacks as many times as your energy allows — even the same turn it's played. Damage hits the enemy active; if they have no active, it hits <b>them directly</b>.<br>
     · Each player has <b>30 HP</b>. Bring the other player's HP to 0 to win.<br>
+    · When your active falls, the first card on your bench steps up to replace it.<br>
     · Once per turn you can <b>switch</b> your active with a benched card, for free.<br>
-    · A card can attack the same turn it's played — as long as you have the energy.<br>
     · Rumor says there's a legendary card hiding in one of the decks. Don't waste it.<br>
     · Player 2 can be a <b>CPU opponent</b> — flip the toggle before pressing PLAY.
   </div>
@@ -285,6 +292,12 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   <h2 id="winTitle"></h2>
   <p class="tag" id="winLine"></p>
   <button id="againBtn" class="btn primary">REMATCH</button>
+</div>
+
+<div id="helpScreen" class="overlay hidden">
+  <h2>HOW TO PLAY</h2>
+  <div class="rules" id="helpBody"></div>
+  <button id="helpCloseBtn" class="btn primary">CLOSE</button>
 </div>
 
 <script>
@@ -712,6 +725,9 @@ $('#swapBtn').addEventListener('click',()=>{
   S.swapMode=!S.swapMode;render();
 });
 $('#muteBtn').addEventListener('click',()=>{muted=!muted;$('#muteBtn').textContent='SOUND: '+(muted?'OFF':'ON');});
+$('#helpBody').innerHTML=document.querySelector('#startScreen .rules').innerHTML;
+$('#helpBtn').addEventListener('click',()=>$('#helpScreen').classList.remove('hidden'));
+$('#helpCloseBtn').addEventListener('click',()=>$('#helpScreen').classList.add('hidden'));
 $('#p2mode').addEventListener('click',()=>{
   aiP2=!aiP2;
   $('#p2mode').textContent='PLAYER 2: '+(aiP2?'CPU':'HUMAN');
