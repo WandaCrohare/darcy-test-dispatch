@@ -52,20 +52,6 @@ html[data-theme="kawaii"]{
   color-scheme:light;
 }
 html[data-theme="kawaii"] body::before{display:none}
-html[data-theme="brutal"]{
-  --bg:#f4ede1; --panel:#ffffff; --panel2:#fff3c4; --line:#111111;
-  --ink:#111111; --dim:#5c5c5c;
-  --red:#ff3355; --orange:#ff8f2d; --yellow:#ffd641;
-  --green:#00b85c; --blue:#3b6cff; --pink:#ff5ca8;
-  --fpx:'Archivo Black',sans-serif; --fterm:'Rubik',sans-serif;
-  --card-border:#111111;
-  --fs-xs:11px; --fs-s:12px; --fs-m:20px; --fs-body:17px; --fs-atk:16px; --fs-float:14px;
-  --radius:0; --radius-btn:0;
-  --shadow-card:6px 6px 0 #111; --shadow-btn:5px 5px 0 #111;
-  --overlay:rgba(244,237,225,.96); --float-shadow:#fff;
-  color-scheme:light;
-}
-html[data-theme="brutal"] body::before{display:none}
 html[data-theme="fantasy"]{
   --bg:#161009; --panel:#241a10; --panel2:#2f2214; --line:#5c4526;
   --ink:#f3e2bb; --dim:#b09a72;
@@ -80,8 +66,8 @@ html[data-theme="fantasy"]{
   --overlay:rgba(16,10,5,.95); --float-shadow:#000;
 }
 html[data-theme="fantasy"] body::before{display:none}
-html[data-theme="fantasy"] .csprite canvas{filter:sepia(.45) contrast(1.05)}
-html[data-theme="neon"] .csprite canvas{filter:drop-shadow(0 0 4px rgba(0,240,255,.6))}
+html[data-theme="fantasy"] .cavatar{filter:sepia(.3) contrast(1.05)}
+html[data-theme="neon"] .cavatar{filter:drop-shadow(0 0 8px rgba(0,240,255,.55))}
 @media (max-width:760px){
   :root{ --cw-a:118px; --cw-b:82px; --cw-h:94px; --ch-a:194px; --ch-b:104px; --ch-h:128px; }
 }
@@ -141,10 +127,14 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 .cname{font-family:var(--fpx);font-size:var(--fs-s);color:#1a1c2c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coin{background:#1a1c2c;color:var(--yellow);font-family:var(--fpx);font-size:var(--fs-s);padding:3px 4px;border:2px solid var(--yellow);flex:none}
 .csprite{flex:1;display:grid;place-items:center;min-height:0}
-.csprite canvas{image-rendering:pixelated}
-.mode-active canvas{width:60px;height:60px}
-.mode-bench canvas{width:38px;height:38px}
-.mode-hand canvas{width:46px;height:46px}
+.cavatar{
+  display:grid;place-items:center;width:1.75em;height:1.75em;border-radius:50%;line-height:1;
+  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.45),rgba(255,255,255,0) 62%),
+            color-mix(in srgb,var(--ac) 38%,transparent);
+}
+.mode-active .cavatar{font-size:52px}
+.mode-bench .cavatar{font-size:30px}
+.mode-hand .cavatar{font-size:42px}
 .crole{font-family:var(--fpx);font-size:var(--fs-xs);color:var(--dim);text-align:center;padding-bottom:2px}
 .cfoot{display:flex;justify-content:space-between;align-items:center;padding:3px 5px;border-top:3px solid var(--card-border);font-family:var(--fpx);font-size:var(--fs-xs)}
 .stars{color:var(--yellow)}
@@ -268,9 +258,9 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   .overlay h1{font-size:18px}
   .overlay .tag{font-size:18px}
   .names input{width:150px;font-size:18px}
-  .mode-active canvas{width:48px;height:48px}
-  .mode-bench canvas{width:30px;height:30px}
-  .mode-hand canvas{width:38px;height:38px}
+  .mode-active .cavatar{font-size:48px}
+  .mode-bench .cavatar{font-size:26px}
+  .mode-hand .cavatar{font-size:38px}
   .phrow{max-width:150px}
 }
 @media (max-width:520px){
@@ -289,9 +279,9 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   .phbar{max-width:90px;height:6px}
   .btn{padding:9px 9px}
   .card.clickable:active{transform:translateY(-2px)}
-  .mode-active canvas{width:44px;height:44px}
-  .mode-bench canvas{width:26px;height:26px}
-  .mode-hand canvas{width:34px;height:34px}
+  .mode-active .cavatar{font-size:44px}
+  .mode-bench .cavatar{font-size:24px}
+  .mode-hand .cavatar{font-size:36px}
   .crole{display:none}
   .mid{position:sticky;bottom:0;background:var(--bg);z-index:20;padding:5px 0}
   .zone{gap:4px}
@@ -355,7 +345,7 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 'use strict';
 /* ================= ROSTER (bilingual: en / es) ================= */
 const CHARS=[
- {id:'james',name:'JAMES',
+ {id:'james',name:'JAMES',emoji:'🏗️',
   epithet:{en:'The Architect',es:'El Arquitecto'},role:{en:'ARCH',es:'ARQ'},
   stars:2,hp:90,cost:3,color:'#29adff',
   quip:{en:'James lays the foundations.',es:'James clava los cimientos.'},
@@ -364,7 +354,7 @@ const CHARS=[
     txt:{en:'A wall that does not move. Not even in production.',es:'Un muro que no se mueve ni en producción.'}},
    {name:{en:'Design Pattern',es:'Patrón de Diseño'},cost:3,dmg:30,
     txt:{en:'Injects dependencies. And fear.',es:'Inyecta dependencias. Y miedo.'}}]},
- {id:'travis',name:'TRAVIS',
+ {id:'travis',name:'TRAVIS',emoji:'📋',
   epithet:{en:'The Project Owner',es:'El Project Owner'},role:{en:'PO',es:'PO'},
   stars:2,hp:80,cost:4,color:'#ffa300',
   quip:{en:'Travis shows up with the whole backlog.',es:'Travis llega con el backlog completo.'},
@@ -373,7 +363,7 @@ const CHARS=[
     txt:{en:"Yesterday's 'nice-to-have' is today's emergency.",es:'Ahora es urgente lo que era de ayer.'}},
    {name:{en:'Scope Creep',es:'Scope Creep'},cost:4,dmg:40,
     txt:{en:'Just one tiny thing more. Absolute chaos.',es:'“Es una cosita nomás.” Desastrosísimo.'}}]},
- {id:'darcy',name:'DARCYIQ',
+ {id:'darcy',name:'DARCYIQ',emoji:'🤖',
   epithet:{en:'The Legendary AI',es:'La IA Legendaria'},role:{en:'AI',es:'IA'},
   stars:3,hp:150,cost:5,color:'#ff77a8',holo:true,
   quip:{en:'DARCYIQ HAS ENTERED THE CHAT.',es:'DARCYIQ HA ENTRADO AL CHAT.'},
@@ -382,7 +372,7 @@ const CHARS=[
     txt:{en:'Optimizes itself while watching you.',es:'Se optimiza mientras te mira.'}},
    {name:{en:'Production Deploy',es:'Deploy a Producción'},cost:6,dmg:70,
     txt:{en:'Friday, 4:59 PM. Zero incidents.',es:'Viernes, 17:59. Cero incidentes.'}}]},
- {id:'nico',name:'NICO',
+ {id:'nico',name:'NICO',emoji:'🐛',
   epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
   stars:1,hp:55,cost:2,color:'#ff004d',
   quip:{en:'Nico arrives. Bugs included, free of charge.',es:'Nico llega. Bugs incluidos, sin cargo.'},
@@ -391,7 +381,7 @@ const CHARS=[
     txt:{en:"It's not a bug, it's a surprise feature.",es:'No es un bug, es una feature sorpresa.'}},
    {name:{en:'Friday Deploy',es:'Deploy del Viernes'},cost:3,dmg:30,
     txt:{en:'Then he ran for the last train.',es:'Y se fue corriendo a la estación.'}}]},
- {id:'christian',name:'CHRISTIAN',
+ {id:'christian',name:'CHRISTIAN',emoji:'🕵️',
   epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
   stars:1,hp:45,cost:1,color:'#29adff',
   quip:{en:'Christian reviews your code… and your soul.',es:'Christian revisa tu código… y tu alma.'},
@@ -400,7 +390,7 @@ const CHARS=[
     txt:{en:'Comments. With love. Mostly.',es:'Son comentarios. Con amor. Casi.'}},
    {name:{en:'History Ctrl+Z',es:'Ctrl+Z Histórico'},cost:2,dmg:20,heal:5,
     txt:{en:'Undid the damage. And the commit.',es:'Deshizo el daño. Y el commit.'}}]},
- {id:'fernando',name:'FERNANDO',
+ {id:'fernando',name:'FERNANDO',emoji:'🚀',
   epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
   stars:1,hp:60,cost:2,color:'#ffa300',
   quip:{en:'Fernando pushes without looking back.',es:'Fernando hace push sin mirar atrás.'},
@@ -409,7 +399,7 @@ const CHARS=[
     txt:{en:'--force and away we go.',es:'--force y a otra cosa, mariposa.'}},
    {name:{en:'Dark Mode',es:'Modo Oscuro'},cost:3,dmg:35,
     txt:{en:"Strikes from the IDE's shadows.",es:'Ataca desde las sombras del IDE.'}}]},
- {id:'alexis',name:'ALEXIS',
+ {id:'alexis',name:'ALEXIS',emoji:'🦉',
   epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
   stars:1,hp:50,cost:2,color:'#00e436',
   quip:{en:'Alexis refactors everything, even the coffee.',es:'Alexis refactoriza hasta el café.'},
@@ -418,7 +408,7 @@ const CHARS=[
     txt:{en:'The best code is born at 3 AM.',es:'De madrugada nace el mejor código.'}},
    {name:{en:'Panic!',es:'¡Pánico!'},cost:3,dmg:30,
     txt:{en:'The compiler was right.',es:'El compilador tenía razón.'}}]},
- {id:'enzo',name:'ENZO',
+ {id:'enzo',name:'ENZO',emoji:'🧩',
   epithet:{en:'Programmer',es:'Programador'},role:{en:'DEV',es:'DEV'},
   stars:1,hp:50,cost:2,color:'#ff77a8',
   quip:{en:'Enzo pasted something from StackOverflow.',es:'Enzo pegó algo de StackOverflow.'},
@@ -427,7 +417,7 @@ const CHARS=[
     txt:{en:'StackOverflow: the real AI.',es:'StackOverflow: la verdadera IA.'}},
    {name:{en:'Epic Copy-Paste',es:'Copy-Paste Épico'},cost:2,dmg:25,
     txt:{en:'If it compiles, it is mine.',es:'Si compila, es mío.'}}]},
- {id:'wanda',name:'WANDA',
+ {id:'wanda',name:'WANDA',emoji:'🎨',
   epithet:{en:'The UX',es:'La UX'},role:{en:'UX',es:'UX'},
   stars:1,hp:45,cost:1,color:'#ffec27',
   quip:{en:'Wanda redesigned the board. Everything is prettier.',es:'Wanda rediseñó el tablero. Todo más lindo.'},
@@ -512,12 +502,11 @@ const tr=v=>(v&&typeof v==='object')?v[lang]:v;
 const fmt=(s,o)=>s.replace(/\{(\w+)\}/g,(_,k)=>o[k]??'');
 
 /* ================= THEMES ================= */
-const THEMES=['retro','neon','kawaii','brutal','fantasy'];
+const THEMES=['retro','neon','kawaii','fantasy'];
 const THEME_FONTS={
  retro:'family=Press+Start+2P&family=VT323',
  neon:'family=Orbitron:wght@600;800&family=Share+Tech+Mono',
  kawaii:'family=Baloo+2:wght@600;800&family=Nunito:wght@500;700',
- brutal:'family=Archivo+Black&family=Rubik:wght@500;700',
  fantasy:'family=Cinzel:wght@600;800&family=EB+Garamond:wght@500;700',
 };
 let theme='retro';
@@ -538,21 +527,6 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 let UID=0;
 const inst=def=>({uid:++UID,def,hp:def.hp,attacked:false});
-
-/* procedural 7x7 mirrored pixel sprite */
-function spriteCanvas(char){
-  const c=document.createElement('canvas');c.width=7;c.height=7;
-  const x=c.getContext('2d');
-  let s=9;for(const ch of char.id)s=Math.imul(s^ch.charCodeAt(0),387420489)>>>0;
-  const r=()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296;};
-  for(let y=0;y<7;y++)for(let i=0;i<4;i++){
-    if(r()>0.42){x.fillStyle=char.color;x.fillRect(i,y,1,1);x.fillRect(6-i,y,1,1);}
-  }
-  x.fillStyle='#12141f';
-  x.fillRect(1,2,1,1);x.fillRect(5,2,1,1);
-  if(r()>0.5)x.fillRect(2,4,3,1);else x.fillRect(3,4,1,1);
-  return c;
-}
 
 /* ================= SOUND ================= */
 let AC=null,muted=false;
@@ -793,7 +767,9 @@ function cardEl(c,mode,pi){
   const coin=document.createElement('span');coin.className='coin';coin.textContent=d.cost;coin.title=t('costT');
   head.append(nm,coin);
 
-  const spr=document.createElement('div');spr.className='csprite';spr.append(spriteCanvas(d));
+  const spr=document.createElement('div');spr.className='csprite';
+  const av=document.createElement('span');av.className='cavatar';av.textContent=d.emoji;
+  spr.append(av);
   const role=document.createElement('div');role.className='crole';role.textContent=`${tr(d.role)} · ${tr(d.epithet)}`;
 
   const foot=document.createElement('div');foot.className='cfoot';

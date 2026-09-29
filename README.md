@@ -45,8 +45,8 @@ deck). If it reaches the board, you'll know.
 
 ## Features
 
-- **5 switchable themes**: retro 8-bit, neon cyberpunk, pastel kawaii, neo-brutalism and epic fantasy (palette, typography and borders change; preference is saved)
-- Procedurally generated mirrored pixel sprites — every character has its own
+- **4 switchable themes**: retro 8-bit, neon cyberpunk, pastel kawaii and epic fantasy (palette, typography and borders change; preference is saved)
+- Character avatars on color-matched orbs (🎨 Wanda, 🤖 DarcyIQ, 🏗️ James…)
 - Mana-style energy, bench switching, direct hits, overflow damage, KO promotions
 - Optional CPU opponent with deploy/attack/retreat heuristics
 - **English and Spanish** — toggle the language button anytime, even mid-match
