@@ -93,8 +93,8 @@ body::before{ /* CRT scanlines */
 @keyframes quake{0%,100%{transform:none}25%{transform:translate(-5px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,2px)}}
 
 /* ---------- header ---------- */
-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;border-bottom:3px solid var(--line)}
-.logo{font-family:var(--fpx);font-size:var(--fs-m);color:var(--yellow);text-shadow:2px 2px 0 var(--float-shadow)}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 0;border-bottom:3px solid var(--line);line-height:1.6}
+.logo{font-family:var(--fpx);font-size:var(--fs-m);color:var(--yellow);text-shadow:2px 2px 0 var(--float-shadow);white-space:nowrap;line-height:1.5}
 #turnTag{font-family:var(--fpx);font-size:var(--fs-s);color:var(--dim);flex:1;text-align:right}
 
 /* ---------- zones ---------- */
@@ -103,7 +103,7 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 .table{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .slots{display:flex;gap:8px;align-items:center}
 .info{display:flex;flex-direction:column;gap:5px;min-width:150px}
-.pname{font-family:var(--fpx);font-size:var(--fs-s)}
+.pname{font-family:var(--fpx);font-size:var(--fs-s);line-height:1.5}
 .meta{font-size:var(--fs-body);color:var(--dim)}
 .pips{display:flex;gap:3px;flex-wrap:wrap;max-width:150px}
 .pip{width:10px;height:10px;background:var(--panel);border:2px solid var(--line)}
@@ -139,6 +139,13 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 .mode-active .cavatar{font-size:52px}
 .mode-bench .cavatar{font-size:30px}
 .mode-hand .cavatar{font-size:42px}
+.csprite canvas{image-rendering:pixelated}
+.mode-active canvas{width:60px;height:60px}
+.mode-bench canvas{width:38px;height:38px}
+.mode-hand canvas{width:46px;height:46px}
+html[data-theme="neon"] .mode-active canvas{width:70px;height:70px}
+html[data-theme="neon"] .mode-bench canvas{width:40px;height:40px}
+html[data-theme="neon"] .mode-hand canvas{width:52px;height:52px}
 .crole{font-family:var(--fpx);font-size:var(--fs-xs);color:var(--dim);text-align:center;padding-bottom:2px}
 .cfoot{display:flex;justify-content:space-between;align-items:center;padding:3px 5px;border-top:3px solid var(--card-border);font-family:var(--fpx);font-size:var(--fs-xs)}
 .stars{color:var(--yellow)}
@@ -188,7 +195,7 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
 .btn{
   font-family:var(--fpx);font-size:var(--fs-xs);background:var(--panel);color:var(--ink);
   border:3px solid var(--card-border);border-radius:var(--radius-btn);box-shadow:var(--shadow-btn);
-  padding:10px 12px;cursor:pointer;
+  padding:10px 12px;cursor:pointer;line-height:1.6;
 }
 .btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #000}
 .btn:disabled{opacity:.35;cursor:default}
@@ -265,6 +272,9 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   .mode-active .cavatar{font-size:48px}
   .mode-bench .cavatar{font-size:26px}
   .mode-hand .cavatar{font-size:38px}
+  .mode-active canvas{width:56px;height:52px}
+  .mode-bench canvas{width:26px;height:26px}
+  .mode-hand canvas{width:38px;height:38px}
   .phrow{max-width:150px}
 }
 @media (max-width:520px){
@@ -286,6 +296,9 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 0;bor
   .mode-active .cavatar{font-size:44px}
   .mode-bench .cavatar{font-size:24px}
   .mode-hand .cavatar{font-size:36px}
+  .mode-active canvas{width:52px;height:52px}
+  .mode-bench canvas{width:24px;height:24px}
+  .mode-hand canvas{width:36px;height:36px}
   .crole{display:none}
   .mid{position:sticky;bottom:0;background:var(--bg);z-index:20;padding:5px 0}
   .zone{gap:4px}
@@ -363,7 +376,7 @@ const CHARS=[
   stars:2,hp:80,cost:4,color:'#ffa300',
   quip:{en:'Travis shows up with the whole backlog.',es:'Travis llega con el backlog completo.'},
   attacks:[
-   {name:{en:'Re-prioritization',es:'Repriorización'},cost:1,dmg:15,draw:1,
+   {name:{en:'Re-prioritization',es:'Repriorización'},cost:1,dmg:15,
     txt:{en:"Yesterday's 'nice-to-have' is today's emergency.",es:'Ahora es urgente lo que era de ayer.'}},
    {name:{en:'Scope Creep',es:'Scope Creep'},cost:4,dmg:40,
     txt:{en:'Just one tiny thing more. Absolute chaos.',es:'“Es una cosita nomás.” Desastrosísimo.'}}]},
@@ -408,7 +421,7 @@ const CHARS=[
   stars:1,hp:50,cost:2,color:'#00e436',
   quip:{en:'Alexis refactors everything, even the coffee.',es:'Alexis refactoriza hasta el café.'},
   attacks:[
-   {name:{en:'Night Refactor',es:'Refactor Nocturno'},cost:1,dmg:15,draw:1,
+   {name:{en:'Night Refactor',es:'Refactor Nocturno'},cost:1,dmg:15,
     txt:{en:'The best code is born at 3 AM.',es:'De madrugada nace el mejor código.'}},
    {name:{en:'Panic!',es:'¡Pánico!'},cost:3,dmg:30,
     txt:{en:'The compiler was right.',es:'El compilador tenía razón.'}}]},
@@ -426,7 +439,7 @@ const CHARS=[
   stars:1,hp:45,cost:1,color:'#ffec27',
   quip:{en:'Wanda redesigned the board. Everything is prettier.',es:'Wanda rediseñó el tablero. Todo más lindo.'},
   attacks:[
-   {name:{en:'User Feedback',es:'Feedback de Usuario'},cost:1,dmg:15,draw:1,
+   {name:{en:'User Feedback',es:'Feedback de Usuario'},cost:1,dmg:15,
     txt:{en:"'I don't know what I want, but it is not this.'",es:'“No sé qué busco, pero no es esto.”'}},
    {name:{en:'Surprise Redesign',es:'Rediseño Sorpresa'},cost:2,dmg:20,heal:10,
     txt:{en:'Prettier. Usable. Unexpected.',es:'Todo más lindo. Y más usable.'}}]},
@@ -789,7 +802,7 @@ function cardEl(c,mode,pi){
   head.append(nm,coin);
 
   const spr=document.createElement('div');spr.className='csprite';
-  if(theme==='retro'){
+  if(theme==='retro'||theme==='neon'){
     spr.append(spriteCanvas(d));
   }else{
     const av=document.createElement('span');av.className='cavatar';
