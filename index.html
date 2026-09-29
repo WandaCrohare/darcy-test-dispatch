@@ -66,7 +66,11 @@ html[data-theme="fantasy"]{
   --overlay:rgba(16,10,5,.95); --float-shadow:#000;
 }
 html[data-theme="fantasy"] body::before{display:none}
-html[data-theme="fantasy"] .cavatar{filter:sepia(.3) contrast(1.05)}
+html[data-theme="fantasy"] .cavatar{
+  font-family:var(--fpx);font-weight:800;color:var(--yellow);
+  border:2px solid var(--card-border);box-shadow:inset 0 0 0 1px #3a2a12;
+}
+html[data-theme="fantasy"] .csprite{background:radial-gradient(circle at 50% 42%,rgba(232,193,90,.14),transparent 68%)}
 html[data-theme="neon"] .cavatar{filter:drop-shadow(0 0 8px rgba(0,240,255,.55))}
 @media (max-width:760px){
   :root{ --cw-a:118px; --cw-b:82px; --cw-h:94px; --ch-a:194px; --ch-b:104px; --ch-h:128px; }
@@ -518,6 +522,8 @@ function setTheme(th){
   if(link)link.href='https://fonts.googleapis.com/css2?'+THEME_FONTS[th]+'&display=swap';
   try{localStorage.setItem('tcg-theme',th);}catch(e){}
   document.querySelectorAll('.themeBtn').forEach(b=>b.textContent='THEME: '+th.toUpperCase()+' ▸');
+  buildShowcase();
+  if(S.players.length)render();
 }
 
 /* ================= UTILS ================= */
@@ -527,6 +533,21 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 let UID=0;
 const inst=def=>({uid:++UID,def,hp:def.hp,attacked:false});
+
+/* procedural 7x7 mirrored pixel sprite (retro theme) */
+function spriteCanvas(char){
+  const c=document.createElement('canvas');c.width=7;c.height=7;
+  const x=c.getContext('2d');
+  let s=9;for(const ch of char.id)s=Math.imul(s^ch.charCodeAt(0),387420489)>>>0;
+  const r=()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296;};
+  for(let y=0;y<7;y++)for(let i=0;i<4;i++){
+    if(r()>0.42){x.fillStyle=char.color;x.fillRect(i,y,1,1);x.fillRect(6-i,y,1,1);}
+  }
+  x.fillStyle='#12141f';
+  x.fillRect(1,2,1,1);x.fillRect(5,2,1,1);
+  if(r()>0.5)x.fillRect(2,4,3,1);else x.fillRect(3,4,1,1);
+  return c;
+}
 
 /* ================= SOUND ================= */
 let AC=null,muted=false;
@@ -768,8 +789,13 @@ function cardEl(c,mode,pi){
   head.append(nm,coin);
 
   const spr=document.createElement('div');spr.className='csprite';
-  const av=document.createElement('span');av.className='cavatar';av.textContent=d.emoji;
-  spr.append(av);
+  if(theme==='retro'){
+    spr.append(spriteCanvas(d));
+  }else{
+    const av=document.createElement('span');av.className='cavatar';
+    av.textContent=theme==='fantasy'?d.name.charAt(0):d.emoji;
+    spr.append(av);
+  }
   const role=document.createElement('div');role.className='crole';role.textContent=`${tr(d.role)} · ${tr(d.epithet)}`;
 
   const foot=document.createElement('div');foot.className='cfoot';
